@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:crypter_challenge/classes/Asset.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:transparent_image/transparent_image.dart';
+import 'package:crypter_challenge/classes/Asset.dart';
+import 'package:crypter_challenge/screens/detail.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget arrowUpOrDown(Asset data) {
     if (data.price_change_percentage_24h >= 0) {
       return Icon(Icons.arrow_drop_up, color: Colors.green);
-    } else if (data.price_change_percentage_24h < 0){
+    } else if (data.price_change_percentage_24h < 0) {
       return Icon(Icons.arrow_drop_down, color: Colors.red);
     }
     return Container();
@@ -77,49 +78,56 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromRGBO(17, 33, 129, 1),
-          centerTitle: true,
-          title: Text('Rates',
-              style: TextStyle(color: Color.fromRGBO(18, 237, 119, 1))),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Color.fromRGBO(18, 237, 119, 1),
-              ),
-              onPressed: () {
-                print('Fav pressed');
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.star,
-                color: Color.fromRGBO(18, 237, 119, 1),
-              ),
-              onPressed: () {
-                print('Search pressed');
-              },
-            ),
-          ],
-          leading: IconButton(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(17, 33, 129, 1),
+        centerTitle: true,
+        title: Text('Rates',
+            style: TextStyle(color: Color.fromRGBO(18, 237, 119, 1))),
+        actions: [
+          IconButton(
             icon: Icon(
-              Icons.settings,
+              Icons.search,
               color: Color.fromRGBO(18, 237, 119, 1),
             ),
             onPressed: () {
-              print('Settings pressed');
+              print('Fav pressed');
             },
           ),
+          IconButton(
+            icon: Icon(
+              Icons.star,
+              color: Color.fromRGBO(18, 237, 119, 1),
+            ),
+            onPressed: () {
+              print('Search pressed');
+            },
+          ),
+        ],
+        leading: IconButton(
+          icon: Icon(
+            Icons.settings,
+            color: Color.fromRGBO(18, 237, 119, 1),
+          ),
+          onPressed: () {
+            print('Settings pressed');
+          },
         ),
-        body: FutureBuilder<List<Asset>>(
-          future: assets,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  return Padding(
+      ),
+      body: FutureBuilder<List<Asset>>(
+        future: assets,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => DetailScreen(asset: snapshot.data[index],)),
+                    );
+                  },
+                  child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -175,13 +183,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     arrowUpOrDown(snapshot.data[index]),
                                     Text(
                                       snapshot.data[index]
-                                          .price_change_percentage_24h
-                                          .toStringAsFixed(2) +
+                                              .price_change_percentage_24h
+                                              .toStringAsFixed(2) +
                                           r'%',
                                       style: TextStyle(
                                           color: snapshot.data[index]
-                                              .price_change_percentage_24h >
-                                              0
+                                                      .price_change_percentage_24h >
+                                                  0
                                               ? Colors.green
                                               : Colors.red,
                                           fontWeight: FontWeight.w600,
@@ -195,27 +203,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ],
                     ),
-                  );
-                },
-              );
-            }
-            return Center(child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(Color.fromRGBO(17, 33, 129, 1)),
-
-
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Text('Loading data from Coingecko'),
-                )
-              ],
-            ));
-          },
-        ),
+                  ),
+                );
+              },
+            );
+          }
+          return Center(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    Color.fromRGBO(17, 33, 129, 1)),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text('Loading data from Coingecko'),
+              )
+            ],
+          ));
+        },
+      ),
     );
   }
 }
