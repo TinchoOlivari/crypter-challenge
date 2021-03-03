@@ -25,7 +25,7 @@ class _State extends State<DetailScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(32),
-        child: ListView(
+        child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

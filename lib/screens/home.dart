@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'MIOTA'
   ];
 
-  Future<List<Asset>> fetchAlbum() async {
+  Future<List<Asset>> fetchAssets() async {
     final response = await http.get(
         'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
 
@@ -46,6 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
 
+      setState(() {
+        errorDetected = false;
+      });
       return selectedCrpyoAssets;
     } else {
       setState(() {
@@ -66,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    assets = fetchAlbum();
+    assets = fetchAssets();
     super.initState();
   }
 
@@ -112,98 +115,101 @@ class _HomeScreenState extends State<HomeScreen> {
         future: assets,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DetailScreen(
-                                asset: snapshot.data[index],
-                              )),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            FadeInImage.memoryNetwork(
-                              placeholder: kTransparentImage,
-                              width: 60,
-                              image: snapshot.data[index].image,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8),
-                              child: Text(
-                                snapshot.data[index].name,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w600),
+            return RefreshIndicator(
+              onRefresh: fetchAssets,
+              child: ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DetailScreen(
+                                  asset: snapshot.data[index],
+                                )),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              FadeInImage.memoryNetwork(
+                                placeholder: kTransparentImage,
+                                width: 60,
+                                image: snapshot.data[index].image,
                               ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'USD',
-                                    style: TextStyle(color: Colors.black45),
-                                  ),
-                                  Text(
-                                    r'$' +
-                                        snapshot.data[index].current_price
-                                            .toString(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  '24hs',
-                                  style: TextStyle(color: Colors.black45),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Text(
+                                  snapshot.data[index].name,
+                                  style: TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.w600),
                                 ),
-                                Row(
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    arrowUpOrDown(snapshot.data[index]),
                                     Text(
-                                      snapshot.data[index]
-                                              .price_change_percentage_24h
-                                              .toStringAsFixed(2) +
-                                          r'%',
+                                      'USD',
+                                      style: TextStyle(color: Colors.black45),
+                                    ),
+                                    Text(
+                                      r'$' +
+                                          snapshot.data[index].current_price
+                                              .toString(),
                                       style: TextStyle(
-                                          color: snapshot.data[index]
-                                                      .price_change_percentage_24h >
-                                                  0
-                                              ? Colors.green
-                                              : Colors.red,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 16),
                                     ),
                                   ],
                                 ),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '24hs',
+                                    style: TextStyle(color: Colors.black45),
+                                  ),
+                                  Row(
+                                    children: [
+                                      arrowUpOrDown(snapshot.data[index]),
+                                      Text(
+                                        snapshot.data[index]
+                                                .price_change_percentage_24h
+                                                .toStringAsFixed(2) +
+                                            r'%',
+                                        style: TextStyle(
+                                            color: snapshot.data[index]
+                                                        .price_change_percentage_24h >
+                                                    0
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
           return Center(
