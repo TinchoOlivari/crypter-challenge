@@ -3,7 +3,6 @@ import 'package:crypter_challenge/classes/Asset.dart';
 
 class DetailScreen extends StatefulWidget {
   final Asset asset;
-
   DetailScreen({Key key, @required this.asset}) : super(key: key);
 
   @override
@@ -11,6 +10,11 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _State extends State<DetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -8,6 +8,8 @@ class Asset {
   final double circulating_supply;
   final int market_cap;
   final double total_volume;
+  final String price_change_percentage_1w;
+  final String price_change_percentage_1m;
 
   Asset(
       {this.id,
@@ -18,7 +20,9 @@ class Asset {
       this.price_change_percentage_24h,
       this.circulating_supply,
       this.market_cap,
-      this.total_volume});
+      this.total_volume,
+      this.price_change_percentage_1w,
+      this.price_change_percentage_1m});
 
   factory Asset.fromJson(Map<String, dynamic> json) {
     return Asset(
@@ -30,7 +34,7 @@ class Asset {
         price_change_percentage_24h: json['price_change_percentage_24h'],
         circulating_supply: json['circulating_supply'],
         market_cap: json['market_cap'],
-        total_volume: json['total_volume'].toDouble()
+        total_volume: json['total_volume'].toDouble(),
     );
   }
 

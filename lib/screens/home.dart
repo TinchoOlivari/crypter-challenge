@@ -12,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<List<Asset>> assets;
-  bool isFetching = true;
   bool errorDetected = false;
 
   List crpytoSymbols = [
@@ -36,9 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
         'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
 
     if (response.statusCode == 200) {
-      setState(() {
-        isFetching = true;
-      });
       Iterable l = json.decode(response.body);
       List<Asset> crpyoAssets;
       List<Asset> selectedCrpyoAssets = [];
@@ -53,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return selectedCrpyoAssets;
     } else {
       setState(() {
-        isFetching = true;
         errorDetected = true;
       });
       throw Exception('Error fetching API');
@@ -124,7 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DetailScreen(asset: snapshot.data[index],)),
+                      MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                                asset: snapshot.data[index],
+                              )),
                     );
                   },
                   child: Padding(
@@ -209,20 +207,37 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
           return Center(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation<Color>(
-                    Color.fromRGBO(17, 33, 129, 1)),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text('Loading data from Coingecko'),
-              )
-            ],
-          ));
+            child: errorDetected
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.report_gmailerrorred_outlined,
+                        color: Colors.red,
+                        size: 45,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text('An error has occurred!'),
+                      )
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                            Color.fromRGBO(17, 33, 129, 1)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text('Loading data from Coingecko'),
+                      )
+                    ],
+                  ),
+          );
         },
       ),
     );
