@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         errorDetected = false;
       });
+
       return selectedCrpyoAssets;
     } else {
       setState(() {
@@ -116,7 +117,11 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return RefreshIndicator(
-              onRefresh: fetchAssets,
+              onRefresh: () async {
+                  setState(() {
+                    assets = fetchAssets();
+                  });
+              },
               child: ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
